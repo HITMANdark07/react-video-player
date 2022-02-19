@@ -1,14 +1,20 @@
 import React from "react";
 import "../styles.css";
+import styles from "./player.module.css";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import PauseIcon from "@mui/icons-material/Pause";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import VolumeMuteIcon from "@mui/icons-material/VolumeMute";
 import FullscreenIcon from "@mui/icons-material/Fullscreen";
 import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
-import ClosedCaptionIcon from '@mui/icons-material/ClosedCaption';
-const src="https://dm0qx8t0i9gc9.cloudfront.net/watermarks/video/49_20HQOeijh9fog1/tv-noise-on-television-screen_e_hexxnue__fbcddf4a43ae5e9781fd5fa867190cd2__P360.mp4";
-export default function VideoPlayer({source=src, wide=600}) {
+import ClosedCaptionIcon from "@mui/icons-material/ClosedCaption";
+const src =
+  "https://dm0qx8t0i9gc9.cloudfront.net/watermarks/video/49_20HQOeijh9fog1/tv-noise-on-television-screen_e_hexxnue__fbcddf4a43ae5e9781fd5fa867190cd2__P360.mp4";
+export default function VideoPlayer({
+  source = src,
+  wide = 600,
+  loop = false,
+}) {
   const [play, setPlay] = React.useState(false);
   const [width, setWidth] = React.useState(0);
   const [volumeWidth, setVolumeWidth] = React.useState(0);
@@ -18,11 +24,17 @@ export default function VideoPlayer({source=src, wide=600}) {
   const [fullScreeen, setFullScreen] = React.useState(false);
   const videoRef = React.useRef();
   const volumeRef = React.useRef();
+  const videoBoxRef = React.useRef();
   const togglePlay = () => {
     setPlay((prevState) => !prevState);
   };
   const [playCounter, setPlayCounter] = React.useState(0);
-  const playBackSpeed = [{text:'1.0 X', rate:1.0},{text:'1.25 X', rate:1.25},{text:'1.75 X', rate:1.75},{text:'2.0 X', rate:2.0}];
+  const playBackSpeed = [
+    { text: "1.0 X", rate: 1.0 },
+    { text: "1.25 X", rate: 1.25 },
+    { text: "1.75 X", rate: 1.75 },
+    { text: "2.0 X", rate: 2.0 },
+  ];
   React.useEffect(() => {
     if (play) {
       videoRef.current.play();
@@ -49,30 +61,33 @@ export default function VideoPlayer({source=src, wide=600}) {
     setMuted((prevState) => !prevState);
   };
   const togglePlayCounter = () => {
-    if(videoRef.current){
-      let counter = (playCounter+1)%playBackSpeed.length;
+    if (videoRef.current) {
+      let counter = (playCounter + 1) % playBackSpeed.length;
       videoRef.current.playbackRate = playBackSpeed[counter].rate;
-      setPlayCounter((prevCount) => prevCount+1);
+      setPlayCounter((prevCount) => prevCount + 1);
     }
-  }
+  };
   const toggleFullScreen = () => {
     let elem = videoRef.current;
-    var isInFullScreen = (document.fullscreenElement && document.fullscreenElement !== null) ||
-        (document.webkitFullscreenElement && document.webkitFullscreenElement !== null) ||
-        (document.mozFullScreenElement && document.mozFullScreenElement !== null) ||
-        (document.msFullscreenElement && document.msFullscreenElement !== null);
+    var isInFullScreen =
+      (document.fullscreenElement && document.fullscreenElement !== null) ||
+      (document.webkitFullscreenElement &&
+        document.webkitFullscreenElement !== null) ||
+      (document.mozFullScreenElement &&
+        document.mozFullScreenElement !== null) ||
+      (document.msFullscreenElement && document.msFullscreenElement !== null);
     if (videoRef.current && !fullScreeen) {
-        if (elem.parentNode.requestFullscreen) {
-          elem.parentNode.requestFullscreen();
-        } else if (elem.parentNode.webkitRequestFullscreen) {
-          elem.parentNode.webkitRequestFullscreen();
-        } else if (elem.parentNode.msRequestFullscreen) {
-          elem.parentNode.msRequestFullscreen();
-        }
-        setFullScreen(true);
-    }else if(videoRef.current && fullScreeen){
-         if (isInFullScreen) document.exitFullscreen()
-        setFullScreen(false);
+      if (elem.parentNode.requestFullscreen) {
+        elem.parentNode.requestFullscreen();
+      } else if (elem.parentNode.webkitRequestFullscreen) {
+        elem.parentNode.webkitRequestFullscreen();
+      } else if (elem.parentNode.msRequestFullscreen) {
+        elem.parentNode.msRequestFullscreen();
+      }
+      setFullScreen(true);
+    } else if (videoRef.current && fullScreeen) {
+      if (isInFullScreen) document.exitFullscreen();
+      setFullScreen(false);
     }
   };
   React.useEffect(() => {
@@ -97,107 +112,124 @@ export default function VideoPlayer({source=src, wide=600}) {
   }, []);
 
   return (
-      <div className="video-box" style={{width:wide}}>
-        <video
-          ref={videoRef}
-          src={source}
-          controls={false}
-        />
-        <div className="controls">
-          <div className="play">
-            {play ? (
-              <PauseIcon
-                onClick={togglePlay}
-                style={{ color: "#fff", fontSize: "2rem", cursor: "pointer" }}
+    <div
+      ref={videoBoxRef}
+      className={styles["video-box"]}
+      style={{ width: wide }}
+    >
+      <video ref={videoRef} src={source} controls={false} loop={loop} />
+      <div className={styles.controls}>
+        <div className={styles.play}>
+          {play ? (
+            <PauseIcon
+              onClick={togglePlay}
+              style={{ color: "#fff", fontSize: "2rem", cursor: "pointer" }}
+            />
+          ) : (
+            <PlayCircleIcon
+              onClick={togglePlay}
+              style={{ color: "#fff", fontSize: "2rem", cursor: "pointer" }}
+            />
+          )}
+          <div className={styles["main-controls"]}>
+            <div className={styles.subtitle}>
+              <ClosedCaptionIcon
+                style={{
+                  color: "#fff",
+                  fontSize: "2rem",
+                  cursor: "pointer",
+                }}
               />
-            ) : (
-              <PlayCircleIcon
-                onClick={togglePlay}
-                style={{ color: "#fff", fontSize: "2rem", cursor: "pointer" }}
-              />
-            )}
-            <div className="main-controls">
-              <div className="subtitle">
-                <ClosedCaptionIcon style={{
-                      color: "#fff",
-                      fontSize: "2rem",
-                      cursor: "pointer"
-                  }} />
-              </div>
-              <div className="playback" onClick={togglePlayCounter}>
-                {playBackSpeed[playCounter%(playBackSpeed.length)].text}
-              </div>
-              <div className="volume">
-                {muted ? (
-                  <VolumeMuteIcon
-                    onClick={toggleMute}
-                    style={{
-                      color: "#fff",
-                      fontSize: "2rem",
-                      cursor: "pointer"
-                    }}
-                  />
-                ) : (
-                  <VolumeUpIcon
-                    onClick={toggleMute}
-                    style={{
-                      color: "#fff",
-                      fontSize: "2rem",
-                      cursor: "pointer"
-                    }}
-                  />
-                )}
-                <div
-                  ref={volumeRef}
-                  className="volume-control"
-                  onClick={(e) => {
-                    setVolumeWidth(e.clientX - volumeRef.current.offsetLeft);
-                    let vol = (e.clientX - volumeRef.current.offsetLeft) / 100;
-                    if (vol > 1) videoRef.current.volume = 1;
-                    else videoRef.current.volume = vol;
+            </div>
+            <div className={styles.playback} onClick={togglePlayCounter}>
+              {playBackSpeed[playCounter % playBackSpeed.length].text}
+            </div>
+            <div className={styles.volume}>
+              {muted ? (
+                <VolumeMuteIcon
+                  onClick={toggleMute}
+                  style={{
+                    color: "#fff",
+                    fontSize: "2rem",
+                    cursor: "pointer",
                   }}
-                >
-                  <div
-                    className="v-control"
-                    style={{ width: `${volumeWidth}%` }}
-                  ></div>
-                </div>
-              </div>
-              <div className="time">- {formateTime(duration - currTime)}</div>
-              <div className="fullscreen">
-                {fullScreeen ? (
-                  <FullscreenExitIcon
-                    onClick={toggleFullScreen}
-                    style={{
-                      color: "#fff",
-                      fontSize: "2rem",
-                      cursor: "pointer"
-                    }}
-                  />
-                ) : (
-                  <FullscreenIcon
-                    onClick={toggleFullScreen}
-                    style={{
-                      color: "#fff",
-                      fontSize: "2rem",
-                      cursor: "pointer"
-                    }}
-                  />
-                )}
+                />
+              ) : (
+                <VolumeUpIcon
+                  onClick={toggleMute}
+                  style={{
+                    color: "#fff",
+                    fontSize: "2rem",
+                    cursor: "pointer",
+                  }}
+                />
+              )}
+              <div
+                ref={volumeRef}
+                className={styles["volume-control"]}
+                onClick={(e) => {
+                  setVolumeWidth(
+                    e.clientX -
+                      videoBoxRef.current.offsetLeft -
+                      volumeRef.current.offsetLeft
+                  );
+                  let vol =
+                    (e.clientX -
+                      videoBoxRef.current.offsetLeft -
+                      volumeRef.current.offsetLeft) /
+                    100;
+                  if (vol > 1) videoRef.current.volume = 1;
+                  else videoRef.current.volume = vol;
+                }}
+              >
+                <div
+                  className={styles["v-control"]}
+                  style={{ width: `${volumeWidth}%` }}
+                ></div>
               </div>
             </div>
-          </div>
-          <div
-            className="seek-bar"
-            onClick={(e) => {
-              videoRef.current.currentTime =
-                (e.clientX / videoRef.current.offsetWidth) *
-                videoRef.current.duration;
-            }}
-          >
-            <div className="seek-progress" style={{ width: `${width}%` }}></div>
+            <div className={styles.time}>
+              - {formateTime(duration - currTime)}
+            </div>
+            <div className={styles.fullscreen}>
+              {fullScreeen ? (
+                <FullscreenExitIcon
+                  onClick={toggleFullScreen}
+                  style={{
+                    color: "#fff",
+                    fontSize: "2rem",
+                    cursor: "pointer",
+                  }}
+                />
+              ) : (
+                <FullscreenIcon
+                  onClick={toggleFullScreen}
+                  style={{
+                    color: "#fff",
+                    fontSize: "2rem",
+                    cursor: "pointer",
+                  }}
+                />
+              )}
+            </div>
           </div>
         </div>
+        <div
+          className={styles["seek-bar"]}
+          onClick={(e) => {
+            videoRef.current.currentTime =
+              ((e.clientX - videoBoxRef.current.offsetLeft) /
+                videoRef.current.offsetWidth) *
+              videoRef.current.duration;
+            console.log(e.clientX, videoBoxRef.current.offsetLeft, e);
+          }}
+        >
+          <div
+            className={styles["seek-progress"]}
+            style={{ width: `${width}%` }}
+          ></div>
+        </div>
       </div>
+    </div>
   );
 }
